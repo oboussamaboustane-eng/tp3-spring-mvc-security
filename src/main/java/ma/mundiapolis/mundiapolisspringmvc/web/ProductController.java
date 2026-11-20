@@ -1,5 +1,6 @@
 package ma.mundiapolis.mundiapolisspringmvc.web;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import ma.mundiapolis.mundiapolisspringmvc.entities.Product;
 import ma.mundiapolis.mundiapolisspringmvc.repository.ProductRepository;
@@ -18,7 +19,7 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
-    @GetMapping("/index")
+    @GetMapping("/user/index")
     public String index(Model model) {
         List<Product> products = productRepository.findAll();
         model.addAttribute("productList", products);
@@ -27,25 +28,41 @@ public class ProductController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/index";
+        return "redirect:/user/index";
     }
 
-    @GetMapping("/delete")
+    @PostMapping("/admin/delete")
     public String delete(@RequestParam(name = "id") Long id) {
         productRepository.deleteById(id);
-        return "redirect:/index";
+        return "redirect:/user/index";
     }
 
-    @GetMapping("/newProduct")
+    @GetMapping("/admin/newProduct")
     public String newProduct(Model model) {
         model.addAttribute("product", new Product());
         return "new-product";
     }
 
-    @PostMapping("/saveProduct")
+    @PostMapping("/admin/saveProduct")
     public String saveProduct(@Valid Product product, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) return "new-product";
         productRepository.save(product);
-        return "redirect:/newProduct";
+        return "redirect:/admin/newProduct";
+    }
+
+    @GetMapping("/notAuthorized")
+    public String notAuthorized() {
+        return "notAuthorized";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "login";
     }
 }
