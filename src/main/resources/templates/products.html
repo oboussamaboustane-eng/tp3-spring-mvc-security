@@ -9,9 +9,16 @@
 </head>
 <body>
 <div class="p-3" layout:fragment="content1">
-    <div class="p-3" sec:authorize="hasRole('ADMIN')">
+    <div class="mb-3" sec:authorize="hasRole('ADMIN')">
         <a class="btn btn-primary" th:href="@{/admin/newProduct}">New Product</a>
     </div>
+
+    <form method="get" th:action="@{/user/index}" class="mb-3">
+        <label class="form-label me-2">Keyword:</label>
+        <input type="text" name="keyword" th:value="${keyword}" class="me-2">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
     <table class="table">
         <thead>
         <tr>
@@ -26,7 +33,8 @@
             <td th:text="${p.price}"></td>
             <td th:text="${p.quantity}"></td>
             <td sec:authorize="hasRole('ADMIN')">
-                <form method="post" th:action="@{/admin/delete(id=${p.id})}">
+                <a class="btn btn-success me-1" th:href="@{/admin/editProduct(id=${p.id})}">Edit</a>
+                <form method="post" th:action="@{/admin/delete(id=${p.id})}" style="display:inline;">
                     <button onclick="return confirm('Etes vous sûre?')" type="submit" class="btn btn-danger">Delete</button>
                 </form>
             </td>

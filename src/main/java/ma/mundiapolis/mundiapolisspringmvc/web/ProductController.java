@@ -20,9 +20,10 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @GetMapping("/user/index")
-    public String index(Model model) {
-        List<Product> products = productRepository.findAll();
+    public String index(Model model, @RequestParam(name = "keyword", defaultValue = "") String keyword) {
+        List<Product> products = productRepository.findByNameContains(keyword);
         model.addAttribute("productList", products);
+        model.addAttribute("keyword", keyword);
         return "products";
     }
 
@@ -47,7 +48,14 @@ public class ProductController {
     public String saveProduct(@Valid Product product, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) return "new-product";
         productRepository.save(product);
-        return "redirect:/admin/newProduct";
+        return "redirect:/user/index";
+    }
+
+    @GetMapping("/admin/editProduct")
+    public String editProduct(Model model, @RequestParam(name = "id") Long id) {
+        Product product = productRepository.findById(id).get();
+        model.addAttribute("product", product);
+        return "edit-product";
     }
 
     @GetMapping("/notAuthorized")
